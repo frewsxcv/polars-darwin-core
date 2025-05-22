@@ -18,13 +18,13 @@ class DarwinCoreCsvLazyFrame:  # pylint: disable=too-few-public-methods
     API while giving the object a domain-specific identity that tools like
     linters and type-checkers can understand.
     """
-    
+
     # Common required fields in Darwin Core datasets
     EXPECTED_SCHEMA: Dict[str, pl.DataType] = {
         # Required core fields
         "scientificName": pl.Utf8,
         "kingdom": pl.Utf8,
-        
+
         # Optional but common fields
         "phylum": pl.Utf8,
         "class": pl.Utf8,
@@ -32,11 +32,11 @@ class DarwinCoreCsvLazyFrame:  # pylint: disable=too-few-public-methods
         "family": pl.Utf8,
         "genus": pl.Utf8,
         "species": pl.Utf8,
-        
+
         # Geolocation fields
         "decimalLatitude": pl.Float64,
         "decimalLongitude": pl.Float64,
-        
+
         # Occurrence fields
         "basisOfRecord": pl.Utf8,
         "occurrenceID": pl.Utf8,
@@ -45,7 +45,7 @@ class DarwinCoreCsvLazyFrame:  # pylint: disable=too-few-public-methods
 
     def __init__(self, inner: pl.LazyFrame, validate_schema: bool = True, strict: bool = False):
         """Initialize the Darwin Core LazyFrame wrapper.
-        
+
         Parameters
         ----------
         inner : pl.LazyFrame
@@ -57,7 +57,7 @@ class DarwinCoreCsvLazyFrame:  # pylint: disable=too-few-public-methods
             If False, only validates the types of fields that are present.
         """
         self._inner = inner
-        
+
         if validate_schema:
             # Use collect_schema() to avoid PerformanceWarning
             schema = inner.collect_schema()
@@ -95,14 +95,14 @@ class DarwinCoreCsvLazyFrame:  # pylint: disable=too-few-public-methods
 # Convenience functions
 # -------------------------------------------------------------------------
 
-def read_darwin_core_csv(path: str | Path, validate_schema: bool = True, strict: bool = False, 
+def read_darwin_core_csv(path: str | Path, validate_schema: bool = True, strict: bool = False,
                         **scan_csv_kwargs: Any) -> DarwinCoreCsvLazyFrame:
     """Scan a Darwin Core CSV lazily.
 
     This is a very light wrapper around :pyfunc:`polars.scan_csv` that returns a
     domain-specific :class:`DarwinCoreCsvLazyFrame` instead of a plain
     :class:`polars.LazyFrame`.
-    
+
     Parameters
     ----------
     path : str | Path
@@ -117,4 +117,4 @@ def read_darwin_core_csv(path: str | Path, validate_schema: bool = True, strict:
     """
 
     inner = pl.scan_csv(path, **scan_csv_kwargs)
-    return DarwinCoreCsvLazyFrame(inner, validate_schema=validate_schema, strict=strict) 
+    return DarwinCoreCsvLazyFrame(inner, validate_schema=validate_schema, strict=strict)

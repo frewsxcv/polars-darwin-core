@@ -3,7 +3,7 @@ from __future__ import annotations
 """Helpers for reading unpacked Darwin Core Archives (DwC-A)."""
 
 from pathlib import Path
-from typing import Any, List
+from typing import Any, Lis
 import xml.etree.ElementTree as ET
 
 import polars as pl
@@ -19,10 +19,10 @@ def _parse_meta(meta_path: Path):
     tree = ET.parse(meta_path)
     root = tree.getroot()
 
-    # Handle XML namespace if present
+    # Handle XML namespace if presen
     ns = {"dwc": "http://rs.tdwg.org/dwc/text/"}
 
-    # Try with namespace first, then without
+    # Try with namespace first, then withou
     core_elem = root.find("dwc:core", ns)
     if core_elem is None:
         core_elem = root.find(".//core")
@@ -59,7 +59,7 @@ def _parse_meta(meta_path: Path):
     field_elems = core_elem.findall(".//field")
     if not field_elems:
         field_elems = core_elem.findall("dwc:field", ns)
-    
+
     for field_elem in field_elems:
         index_str = field_elem.get("index")
         term_uri = field_elem.get("term")
@@ -93,7 +93,7 @@ def _parse_meta(meta_path: Path):
     return core_file, has_header, separator, fields
 
 
-def scan_archive(path: str | Path, validate_schema: bool = True, strict: bool = False, 
+def scan_archive(path: str | Path, validate_schema: bool = True, strict: bool = False,
                 **scan_csv_kwargs: Any) -> DarwinCoreCsvLazyFrame:  # noqa: D401
     """Scan an *unpacked* Darwin Core Archive directory lazily.
 
