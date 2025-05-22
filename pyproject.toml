@@ -7,8 +7,8 @@ name = "polars-darwin-core"
 description = "Helpers for working with Darwin Core (DwC) CSVs using Polars."
 readme = "README.md"
 requires-python = ">=3.10"
-license = { text = "MIT" }
-authors = [{ name = "Frewsxcv" }]
+license = "Apache-2.0 OR MIT"
+authors = [{ name = "Corey Farwell" }]
 keywords = ["polars", "darwin-core", "biodiversity", "gbif", "csv"]
 classifiers = [
     "Programming Language :: Python :: 3",
@@ -17,18 +17,13 @@ classifiers = [
 ]
 dynamic = ["version"]
 # Core runtime dependencies
-dependencies = ["polars>=0.20", "typing-extensions>=4.0; python_version<'3.11'"]
+dependencies = ["polars>=0.20"]
 
 [project.optional-dependencies]
-# Developer / CI helpers
-dev = ["pytest>=7.4", "ruff>=0.4", "mypy>=1.9", "build>=1.2", "twine>=5.0"]
+dev = ["pytest>=7.4", "mypy>=1.9", "build>=1.2", "twine>=5.0"]
 
 [tool.hatch.version]
-# Tell Hatch where to read the single-source version string from
 path = "src/polars_darwin_core/__init__.py"
-
-[tool.ruff]
-select = ["E", "F", "I", "RUF"]
 
 [tool.mypy]
 strict = true

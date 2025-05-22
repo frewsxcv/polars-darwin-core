@@ -455,7 +455,6 @@ name = "polars-darwin-core"
 source = { editable = "." }
 dependencies = [
     { name = "polars" },
-    { name = "typing-extensions", marker = "python_full_version < '3.11'" },
 ]
 
 [package.optional-dependencies]
@@ -475,7 +474,6 @@ requires-dist = [
     { name = "pytest", marker = "extra == 'dev'", specifier = ">=7.4" },
     { name = "ruff", marker = "extra == 'dev'", specifier = ">=0.4" },
     { name = "twine", marker = "extra == 'dev'", specifier = ">=5.0" },
-    { name = "typing-extensions", marker = "python_full_version < '3.11'", specifier = ">=4.0" },
 ]
 provides-extras = ["dev"]
 
