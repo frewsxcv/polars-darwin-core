@@ -21,7 +21,7 @@ class Kingdom(str, Enum):
     VIRUSES = "Viruses"
     INCERTAE_SEDIS = "incertae_sedis"
 
-    def __str__(self) -> str:  # pragma: no cover
+    def __str__(self) -> str:
         return str(self.value)
 
 

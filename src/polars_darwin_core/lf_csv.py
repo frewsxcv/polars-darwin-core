@@ -25,7 +25,7 @@ class DarwinCoreCsvLazyFrame:  # pylint: disable=too-few-public-methods
     # ---------------------------------------------------------------------
     # Public helpers
     # ---------------------------------------------------------------------
-    def collect(self, **kwargs: Any) -> pl.DataFrame:  # noqa: D401
+    def collect(self, **kwargs: Any) -> pl.DataFrame:
         """Eagerly evaluate the query plan and return a *polars* DataFrame."""
 
         return self._inner.collect(**kwargs)
@@ -35,13 +35,13 @@ class DarwinCoreCsvLazyFrame:  # pylint: disable=too-few-public-methods
     # ---------------------------------------------------------------------
     # Dunder delegation
     # ---------------------------------------------------------------------
-    def __getattr__(self, item: str):  # noqa: D401
+    def __getattr__(self, item: str):
         return getattr(self._inner, item)
 
-    def __iter__(self) -> Iterable[Any]:  # pragma: no cover
+    def __iter__(self) -> Iterable[Any]:
         return iter(self._inner)
 
-    def __repr__(self) -> str:  # pragma: no cover
+    def __repr__(self) -> str:
         return f"DarwinCoreCsvLazyFrame({self._inner!r})"
 
 
@@ -49,7 +49,7 @@ class DarwinCoreCsvLazyFrame:  # pylint: disable=too-few-public-methods
 # Convenience functions
 # -------------------------------------------------------------------------
 
-def read_darwin_core_csv(path: str | Path, **scan_csv_kwargs: Any) -> DarwinCoreCsvLazyFrame:  # noqa: D401
+def read_darwin_core_csv(path: str | Path, **scan_csv_kwargs: Any) -> DarwinCoreCsvLazyFrame:
     """Scan a Darwin Core CSV lazily.
 
     This is a very light wrapper around :pyfunc:`polars.scan_csv` that returns a
