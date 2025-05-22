@@ -20,7 +20,7 @@ dynamic = ["version"]
 dependencies = ["polars>=0.20"]
 
 [project.optional-dependencies]
-dev = ["pytest>=7.4", "mypy>=1.9", "build>=1.2", "twine>=5.0"]
+dev = ["mypy>=1.9", "build>=1.2", "twine>=5.0"]
 
 [tool.hatch.version]
 path = "src/polars_darwin_core/__init__.py"
