@@ -3,7 +3,7 @@ from __future__ import annotations
 """Helpers for reading unpacked Darwin Core Archives (DwC-A)."""
 
 from pathlib import Path
-from typing import Any, Lis
+from typing import Any, List
 import xml.etree.ElementTree as ET
 
 import polars as pl
@@ -19,10 +19,10 @@ def _parse_meta(meta_path: Path):
     tree = ET.parse(meta_path)
     root = tree.getroot()
 
-    # Handle XML namespace if presen
+    # Handle XML namespace if present
     ns = {"dwc": "http://rs.tdwg.org/dwc/text/"}
 
-    # Try with namespace first, then withou
+    # Try with namespace first, then without
     core_elem = root.find("dwc:core", ns)
     if core_elem is None:
         core_elem = root.find(".//core")
