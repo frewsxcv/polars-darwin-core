@@ -43,30 +43,22 @@ class DarwinCoreCsvLazyFrame:  # pylint: disable=too-few-public-methods
         "eventDate": pl.Utf8,
     }
 
-    def __init__(self, inner: pl.LazyFrame, validate_schema: bool = True, strict: bool = False):
+    def __init__(self, inner: pl.LazyFrame):
         """Initialize the Darwin Core LazyFrame wrapper.
 
         Parameters
         ----------
         inner : pl.LazyFrame
             The inner LazyFrame to wrap
-        validate_schema : bool, default True
-            Whether to validate that the schema matches EXPECTED_SCHEMA
-        strict : bool, default False
-            If True, enforces that all expected fields are present.
-            If False, only validates the types of fields that are present.
         """
         self._inner = inner
 
-        if validate_schema:
-            # Use collect_schema() to avoid PerformanceWarning
-            schema = inner.collect_schema()
-            for field, dtype in self.EXPECTED_SCHEMA.items():
-                if field in schema:
-                    actual_type = schema[field]
-                    assert actual_type == dtype, f"Field '{field}' has unexpected type: got {actual_type}, expected {dtype}"
-                elif strict:
-                    raise ValueError(f"Missing required field '{field}' in schema")
+        # Use collect_schema() to avoid PerformanceWarning
+        schema = inner.collect_schema()
+        for field, dtype in self.EXPECTED_SCHEMA.items():
+            if field in schema:
+                actual_type = schema[field]
+                assert actual_type == dtype, f"Field '{field}' has unexpected type: got {actual_type}, expected {dtype}"
 
     # ---------------------------------------------------------------------
     # Public helpers
@@ -95,8 +87,7 @@ class DarwinCoreCsvLazyFrame:  # pylint: disable=too-few-public-methods
 # Convenience functions
 # -------------------------------------------------------------------------
 
-def read_darwin_core_csv(path: str | Path, validate_schema: bool = True, strict: bool = False,
-                        **scan_csv_kwargs: Any) -> DarwinCoreCsvLazyFrame:
+def read_darwin_core_csv(path: str | Path, **scan_csv_kwargs: Any) -> DarwinCoreCsvLazyFrame:
     """Scan a Darwin Core CSV lazily.
 
     This is a very light wrapper around :pyfunc:`polars.scan_csv` that returns a
@@ -107,14 +98,9 @@ def read_darwin_core_csv(path: str | Path, validate_schema: bool = True, strict:
     ----------
     path : str | Path
         Path to the CSV file
-    validate_schema : bool, default True
-        Whether to validate that the schema matches the expected Darwin Core schema
-    strict : bool, default False
-        If True, enforces that all expected fields are present.
-        If False, only validates the types of fields that are present.
     **scan_csv_kwargs
         Additional keyword arguments passed to pl.scan_csv
     """
 
     inner = pl.scan_csv(path, **scan_csv_kwargs)
-    return DarwinCoreCsvLazyFrame(inner, validate_schema=validate_schema, strict=strict)
+    return DarwinCoreCsvLazyFrame(inner)

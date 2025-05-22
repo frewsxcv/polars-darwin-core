@@ -93,8 +93,7 @@ def _parse_meta(meta_path: Path):
     return core_file, has_header, separator, fields
 
 
-def scan_archive(path: str | Path, validate_schema: bool = True, strict: bool = False,
-                **scan_csv_kwargs: Any) -> DarwinCoreCsvLazyFrame:  # noqa: D401
+def scan_archive(path: str | Path, **scan_csv_kwargs: Any) -> DarwinCoreCsvLazyFrame:  # noqa: D401
     """Scan an *unpacked* Darwin Core Archive directory lazily.
 
     Parameters
@@ -102,11 +101,6 @@ def scan_archive(path: str | Path, validate_schema: bool = True, strict: bool = 
     path:
         Path to a directory that contains at least ``meta.xml`` and the core
         data file referenced from it.
-    validate_schema:
-        Whether to validate that the schema matches the expected Darwin Core schema
-    strict:
-        If True, enforces that all expected fields are present.
-        If False, only validates the types of fields that are present.
     **scan_csv_kwargs:
         Extra keyword arguments forwarded to :pyfunc:`polars.scan_csv` (e.g.
         ``infer_schema_length``).
@@ -132,4 +126,4 @@ def scan_archive(path: str | Path, validate_schema: bool = True, strict: bool = 
         **scan_csv_kwargs,
     )
 
-    return DarwinCoreCsvLazyFrame(inner, validate_schema=validate_schema, strict=strict)
+    return DarwinCoreCsvLazyFrame(inner)

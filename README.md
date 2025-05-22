@@ -29,10 +29,6 @@ archive_path = "path/to/dwc/archive"
 # Load the core file from the archive
 lf = scan_archive(archive_path)
 
-# Schema validation is enabled by default (but not strict)
-# You can enforce strict schema validation:
-# lf = scan_archive(archive_path, strict=True)
-
 # Work with the data
 df = lf.filter(pl.col("kingdom") == "Animalia").collect()
 print(df)
