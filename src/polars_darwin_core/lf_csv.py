@@ -68,20 +68,6 @@ class DarwinCoreCsvLazyFrame:  # pylint: disable=too-few-public-methods
 
         return self._inner.collect(**kwargs)
 
-    # More domain-specific helpers can be added here over time.
-
-    # ---------------------------------------------------------------------
-    # Dunder delegation
-    # ---------------------------------------------------------------------
-    def __getattr__(self, item: str):
-        return getattr(self._inner, item)
-
-    def __iter__(self) -> Iterable[Any]:
-        return iter(self._inner)
-
-    def __repr__(self) -> str:
-        return f"DarwinCoreCsvLazyFrame({self._inner!r})"
-
 
 # -------------------------------------------------------------------------
 # Convenience functions
