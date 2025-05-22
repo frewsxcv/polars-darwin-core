@@ -43,6 +43,16 @@ class DarwinCoreCsvLazyFrame:  # pylint: disable=too-few-public-methods
         "eventDate": pl.Utf8,
     }
 
+    # SCHEMA_OVERRIDES = {
+    #     "decimalLatitude": pl.Float64(),
+    #     "decimalLongitude": pl.Float64(),
+    #     "taxonKey": pl.UInt64(),
+    #     "verbatimScientificName": pl.String(),
+    #     "order": pl.String(),
+    #     "recordedBy": pl.String(),
+    #     "kingdom": kingdom_enum,
+    # }
+
     def __init__(self, inner: pl.LazyFrame):
         """Initialize the Darwin Core LazyFrame wrapper.
 
