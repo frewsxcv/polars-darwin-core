@@ -19,16 +19,26 @@ def _parse_meta(meta_path: Path):
     tree = ET.parse(meta_path)
     root = tree.getroot()
 
-    core_elem = root.find("core")
+    # Handle XML namespace if present
+    ns = {"dwc": "http://rs.tdwg.org/dwc/text/"}
+
+    # Try with namespace first, then without
+    core_elem = root.find("dwc:core", ns)
+    if core_elem is None:
+        core_elem = root.find(".//core")
     if core_elem is None:
         raise ValueError("meta.xml does not contain <core> element")
 
     # file location – in <files><location>relative/path</location></files>
-    files_elem = core_elem.find("files")
+    files_elem = core_elem.find(".//files")
+    if files_elem is None:
+        files_elem = core_elem.find("dwc:files", ns)
     if files_elem is None:
         raise ValueError("<core> missing <files>")
 
-    location_elem = files_elem.find("location")
+    location_elem = files_elem.find(".//location")
+    if location_elem is None:
+        location_elem = files_elem.find("dwc:location", ns)
     if location_elem is None or not location_elem.text:
         raise ValueError("<files> missing <location>")
     core_file = location_elem.text.strip()
@@ -46,7 +56,11 @@ def _parse_meta(meta_path: Path):
 
     # column order
     fields: List[str] = []
-    for field_elem in core_elem.findall("field"):
+    field_elems = core_elem.findall(".//field")
+    if not field_elems:
+        field_elems = core_elem.findall("dwc:field", ns)
+    
+    for field_elem in field_elems:
         index_str = field_elem.get("index")
         term_uri = field_elem.get("term")
         if index_str is None or term_uri is None:
@@ -62,7 +76,9 @@ def _parse_meta(meta_path: Path):
         fields[idx] = term
 
     # some meta.xml include <id index="0" /> that represents the record id
-    id_elem = core_elem.find("id")
+    id_elem = core_elem.find(".//id")
+    if id_elem is None:
+        id_elem = core_elem.find("dwc:id", ns)
     if id_elem is not None and id_elem.get("index") is not None:
         idx = int(id_elem.get("index"))
         if len(fields) <= idx:
@@ -77,7 +93,8 @@ def _parse_meta(meta_path: Path):
     return core_file, has_header, separator, fields
 
 
-def scan_archive(path: str | Path, **scan_csv_kwargs: Any) -> DarwinCoreCsvLazyFrame:  # noqa: D401
+def scan_archive(path: str | Path, validate_schema: bool = True, strict: bool = False, 
+                **scan_csv_kwargs: Any) -> DarwinCoreCsvLazyFrame:  # noqa: D401
     """Scan an *unpacked* Darwin Core Archive directory lazily.
 
     Parameters
@@ -85,6 +102,11 @@ def scan_archive(path: str | Path, **scan_csv_kwargs: Any) -> DarwinCoreCsvLazyF
     path:
         Path to a directory that contains at least ``meta.xml`` and the core
         data file referenced from it.
+    validate_schema:
+        Whether to validate that the schema matches the expected Darwin Core schema
+    strict:
+        If True, enforces that all expected fields are present.
+        If False, only validates the types of fields that are present.
     **scan_csv_kwargs:
         Extra keyword arguments forwarded to :pyfunc:`polars.scan_csv` (e.g.
         ``infer_schema_length``).
@@ -110,4 +132,4 @@ def scan_archive(path: str | Path, **scan_csv_kwargs: Any) -> DarwinCoreCsvLazyF
         **scan_csv_kwargs,
     )
 
-    return DarwinCoreCsvLazyFrame(inner) 
+    return DarwinCoreCsvLazyFrame(inner, validate_schema=validate_schema, strict=strict)

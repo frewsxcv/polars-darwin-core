@@ -252,7 +252,27 @@ class TestDarwinCore(unittest.TestCase):
         self.assertEqual(df.to_dicts()[0], expected_row)
 
     def test_scan_archive_core(self) -> None:
-        """Test with a minimal mock archive for scanning."""
-        # For now, skip this test as it requires specific meta.xml format
-        # that's currently not compatible with the test sample dataset
-        self.skipTest("Skipping scan_archive test for now - would need special mock setup")
+        """Test the scan_archive function using the existing sample dataset."""
+        # Use the sample dataset directory from the repository
+        data_dir = Path(__file__).parents[1] / "sample-dataset"
+
+        # Call scan_archive with the sample dataset
+        lf = scan_archive(data_dir)
+
+        # Validate the result is a DarwinCoreCsvLazyFrame
+        self.assertIsInstance(lf, DarwinCoreCsvLazyFrame)
+
+        # Collect a small portion to verify we can access the data
+        df = lf.head(2).collect()
+
+        # Verify we have the right schema - occurrence.txt has many columns
+        self.assertTrue(df.width > 10)
+
+        # Check for some expected columns from Darwin Core
+        expected_columns = ["scientificName", "kingdom", "decimalLatitude", "decimalLongitude"]
+        for col in expected_columns:
+            self.assertIn(col, df.columns)
+
+        # Verify we can access a specific value from the first row
+        # The first record should be for "Lophophanes cristatus" based on our earlier test
+        self.assertEqual(df["scientificName"][0], "Lophophanes cristatus (Linnaeus, 1758)")
