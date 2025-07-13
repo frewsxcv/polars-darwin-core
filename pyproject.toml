@@ -21,12 +21,12 @@ dependencies = ["polars>=0.20"]
 [project.urls]
 Homepage = "https://github.com/frewsxcv/polars-darwin-core"
 
-[project.optional-dependencies]
-dev = ["mypy==1.16.1", "hatchling>=1.27.0"]
-
 [tool.hatch.version]
 path = "src/polars_darwin_core/__init__.py"
 
 [tool.mypy]
 strict = true
 python_version = "3.10"
+
+[dependency-groups]
+dev = ["twine>=6.1.0", "mypy==1.16.1", "hatchling>=1.27.0"]
