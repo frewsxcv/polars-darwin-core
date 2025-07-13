@@ -24,7 +24,6 @@ class DarwinCoreCsvLazyFrame:  # pylint: disable=too-few-public-methods
         # Required core fields
         "scientificName": pl.Utf8,
         "kingdom": pl.Utf8,
-
         # Optional but common fields
         "phylum": pl.Utf8,
         "class": pl.Utf8,
@@ -32,7 +31,6 @@ class DarwinCoreCsvLazyFrame:  # pylint: disable=too-few-public-methods
         "family": pl.Utf8,
         "genus": pl.Utf8,
         "species": pl.Utf8,
-
         # Geolocation fields
         "decimalLatitude": pl.Float64,
         "decimalLongitude": pl.Float64,
@@ -55,7 +53,6 @@ class DarwinCoreCsvLazyFrame:  # pylint: disable=too-few-public-methods
         "georeferenceProtocol": pl.Utf8,
         "georeferenceSources": pl.Utf8,
         "georeferenceVerificationStatus": pl.Utf8,
-
         # Occurrence fields
         "basisOfRecord": pl.Utf8,
         "occurrenceID": pl.Utf8,
@@ -69,7 +66,6 @@ class DarwinCoreCsvLazyFrame:  # pylint: disable=too-few-public-methods
         "reproductiveCondition": pl.Utf8,
         "occurrenceStatus": pl.Utf8,
         "occurrenceRemarks": pl.Utf8,
-
         # Record-level fields
         "type": pl.Utf8,
         "modified": pl.Utf8,
@@ -116,14 +112,19 @@ class DarwinCoreCsvLazyFrame:  # pylint: disable=too-few-public-methods
         for field, dtype in self.EXPECTED_SCHEMA.items():
             if field in schema:
                 actual_type = schema[field]
-                assert actual_type == dtype, f"Field '{field}' has unexpected type: got {actual_type}, expected {dtype}"
+                assert (
+                    actual_type == dtype
+                ), f"Field '{field}' has unexpected type: got {actual_type}, expected {dtype}"
 
 
 # -------------------------------------------------------------------------
 # Convenience functions
 # -------------------------------------------------------------------------
 
-def read_darwin_core_csv(path: str | Path, **scan_csv_kwargs: Any) -> DarwinCoreCsvLazyFrame:
+
+def read_darwin_core_csv(
+    path: str | Path, **scan_csv_kwargs: Any
+) -> DarwinCoreCsvLazyFrame:
     """Scan a Darwin Core CSV lazily.
 
     This is a very light wrapper around :pyfunc:`polars.scan_csv` that returns a
@@ -138,5 +139,9 @@ def read_darwin_core_csv(path: str | Path, **scan_csv_kwargs: Any) -> DarwinCore
         Additional keyword arguments passed to pl.scan_csv
     """
 
-    inner = pl.scan_csv(path, **scan_csv_kwargs)
+    inner = pl.scan_csv(
+        path,
+        schema_overrides=DarwinCoreCsvLazyFrame.EXPECTED_SCHEMA,
+        **scan_csv_kwargs,
+    )
     return DarwinCoreCsvLazyFrame(inner)
