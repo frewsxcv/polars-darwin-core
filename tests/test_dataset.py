@@ -2,7 +2,7 @@ from pathlib import Path
 import unittest
 
 import polars as pl
-from polars_darwin_core import read_darwin_core_csv, DarwinCoreCsvLazyFrame
+from polars_darwin_core.lf_csv import read_darwin_core_csv, DarwinCoreCsvLazyFrame
 from polars_darwin_core.archive import scan_archive
 from polars_darwin_core.darwin_core import Kingdom
 

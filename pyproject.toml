@@ -3,6 +3,7 @@ requires = ["hatchling"]
 build-backend = "hatchling.build"
 
 [project]
+version = "2.0.0"
 name = "polars-darwin-core"
 description = "Helpers for working with Darwin Core (DwC) CSVs using Polars."
 readme = "README.md"
@@ -15,14 +16,10 @@ classifiers = [
     "License :: OSI Approved :: MIT License",
     "Operating System :: OS Independent",
 ]
-dynamic = ["version"]
 dependencies = ["polars>=0.20"]
 
 [project.urls]
 Homepage = "https://github.com/frewsxcv/polars-darwin-core"
-
-[tool.hatch.version]
-path = "src/polars_darwin_core/__init__.py"
 
 [tool.mypy]
 strict = true

@@ -8,7 +8,7 @@ import xml.etree.ElementTree as ET
 
 import polars as pl
 
-from .lf_csv import DarwinCoreCsvLazyFrame
+from polars_darwin_core.lf_csv import DarwinCoreCsvLazyFrame
 
 __all__ = ["scan_archive"]
 
@@ -95,7 +95,9 @@ def _parse_meta(meta_path: Path) -> tuple[str, bool, str, List[str]]:
     return core_file, has_header, separator, fields
 
 
-def scan_archive(path: str | Path, **scan_csv_kwargs: Any) -> DarwinCoreCsvLazyFrame:  # noqa: D401
+def scan_archive(
+    path: str | Path, **scan_csv_kwargs: Any
+) -> DarwinCoreCsvLazyFrame:  # noqa: D401
     """Scan an *unpacked* Darwin Core Archive directory lazily.
 
     Parameters
