@@ -12,7 +12,7 @@ class TestLfCsv(unittest.TestCase):
         with tempfile.TemporaryDirectory() as tmp_dir:
             tmp_path = Path(tmp_dir)
             csv_path = tmp_path / "dwc.csv"
-            csv_path.write_text("id,kingdom\n1,Animalia\n2,Plantae\n")
+            csv_path.write_text("id\tkingdom\n1\tAnimalia\n2\tPlantae")
 
             lf = read_darwin_core_csv(csv_path)
             self.assertIsInstance(lf, DarwinCoreCsvLazyFrame)

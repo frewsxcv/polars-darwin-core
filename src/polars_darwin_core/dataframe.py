@@ -8,7 +8,9 @@ import polars as pl
 __all__ = ["DarwinCoreDataFrame", "read_darwin_core_dataframe"]
 
 
-def read_darwin_core_dataframe(path: str | Path, **read_csv_kwargs: Any) -> "DarwinCoreDataFrame":
+def read_darwin_core_dataframe(
+    path: str | Path, **read_csv_kwargs: Any
+) -> "DarwinCoreDataFrame":
     """Read a Darwin Core CSV eagerly into a *polars* DataFrame.
 
     Parameters
@@ -44,7 +46,9 @@ class DarwinCoreDataFrame(pl.DataFrame):
     #     def filter_by_kingdom(self, kingdom: Kingdom) -> "DarwinCoreDataFrame":
     #         return self.filter(pl.col("kingdom") == str(kingdom)).cast(DarwinCoreDataFrame)
 
-    # Typing trick: return "Self" once Python 3.11+ only
-
-    def __init__(self, data: pl.DataFrame | Sequence[Mapping[str, Any]] | None = None, **kwargs: Any) -> None:  # type: ignore[override]
-        super().__init__(data, **kwargs) 
+    def __init__(
+        self,
+        data: pl.DataFrame | Sequence[Mapping[str, Any]] | None = None,
+        **kwargs: Any,
+    ) -> None:
+        super().__init__(data, **kwargs)

@@ -116,7 +116,7 @@ class DarwinCoreCsvLazyFrame:  # pylint: disable=too-few-public-methods
 
 
 def read_darwin_core_csv(
-    path: str | Path, **scan_csv_kwargs: Any
+    path: str | Path,
 ) -> DarwinCoreCsvLazyFrame:
     """Scan a Darwin Core CSV lazily.
 
@@ -136,6 +136,6 @@ def read_darwin_core_csv(
         path,
         schema_overrides=DarwinCoreCsvLazyFrame.EXPECTED_SCHEMA,
         quote_char=None,
-        **scan_csv_kwargs,
+        separator="\t",
     )
     return DarwinCoreCsvLazyFrame(inner)

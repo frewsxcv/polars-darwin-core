@@ -14,7 +14,7 @@ class TestDarwinCore(unittest.TestCase):
         data_dir = Path(__file__).parents[1] / "sample-dataset"
         file_path = data_dir / "occurrence.txt"
 
-        lf = read_darwin_core_csv(file_path, separator="\t")
+        lf = read_darwin_core_csv(file_path)
         self.assertIsInstance(lf, DarwinCoreCsvLazyFrame)
 
         # Collect a small portion to verify schema and some basic stats
