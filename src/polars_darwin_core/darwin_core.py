@@ -14,7 +14,7 @@ class Kingdom(str, Enum):
     ANIMALIA = "Animalia"
     PLANTAE = "Plantae"
     FUNGI = "Fungi"
-    PROTISTA = "Protista"
+    PROTOZOA = "Protozoa"
     CHROMISTA = "Chromista"
     ARCHAEA = "Archaea"
     BACTERIA = "Bacteria"
