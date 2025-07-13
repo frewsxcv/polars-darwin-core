@@ -142,6 +142,7 @@ def read_darwin_core_csv(
     inner = pl.scan_csv(
         path,
         schema_overrides=DarwinCoreCsvLazyFrame.EXPECTED_SCHEMA,
+        quote_char=None,
         **scan_csv_kwargs,
     )
     return DarwinCoreCsvLazyFrame(inner)
