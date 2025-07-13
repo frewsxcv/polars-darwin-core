@@ -19,7 +19,7 @@ class Kingdom(str, Enum):
     ARCHAEA = "Archaea"
     BACTERIA = "Bacteria"
     VIRUSES = "Viruses"
-    INCERTAE_SEDIS = "incertae_sedis"
+    INCERTAE_SEDIS = "incertae sedis"
 
     def __str__(self) -> str:
         return str(self.value)

@@ -5,6 +5,8 @@ from typing import Any, Dict, Iterable, List, Optional, Type
 
 import polars as pl
 
+from polars_darwin_core.darwin_core import Kingdom
+
 __all__ = [
     "DarwinCoreCsvLazyFrame",
     "read_darwin_core_csv",
@@ -20,10 +22,10 @@ class DarwinCoreCsvLazyFrame:  # pylint: disable=too-few-public-methods
     """
 
     # Common required fields in Darwin Core datasets
-    EXPECTED_SCHEMA: Dict[str, Type[pl.DataType]] = {
+    EXPECTED_SCHEMA: Dict[str, Type[pl.DataType] | pl.DataType] = {
         # Required core fields
         "scientificName": pl.Utf8,
-        "kingdom": pl.Utf8,
+        "kingdom": pl.Enum(Kingdom),
         # Optional but common fields
         "phylum": pl.Utf8,
         "class": pl.Utf8,
@@ -106,15 +108,6 @@ class DarwinCoreCsvLazyFrame:  # pylint: disable=too-few-public-methods
             The inner LazyFrame to wrap
         """
         self._inner = inner
-
-        # Use collect_schema() to avoid PerformanceWarning
-        schema = inner.collect_schema()
-        for field, dtype in self.EXPECTED_SCHEMA.items():
-            if field in schema:
-                actual_type = schema[field]
-                assert (
-                    actual_type == dtype
-                ), f"Field '{field}' has unexpected type: got {actual_type}, expected {dtype}"
 
 
 # -------------------------------------------------------------------------
