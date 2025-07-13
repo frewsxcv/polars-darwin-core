@@ -1,4 +1,4 @@
-__version__ = "0.0.2"
+__version__ = "1.0.0"
 
 """Top-level package for polars_darwin_core.
 
