@@ -1,3 +1,4 @@
+import polars as pl
 from enum import Enum, unique
 from typing import List
 
@@ -23,6 +24,9 @@ class Kingdom(str, Enum):
 
     def __str__(self) -> str:
         return str(self.value)
+
+
+KingdomDataType = pl.Enum(Kingdom)
 
 
 # See: https://dwc.tdwg.org/terms/#taxon
