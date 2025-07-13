@@ -1,7 +1,7 @@
 from __future__ import annotations
 
 from pathlib import Path
-from typing import Any, Dict, Iterable, List, Optional
+from typing import Any, Dict, Iterable, List, Optional, Type
 
 import polars as pl
 
@@ -20,7 +20,7 @@ class DarwinCoreCsvLazyFrame:  # pylint: disable=too-few-public-methods
     """
 
     # Common required fields in Darwin Core datasets
-    EXPECTED_SCHEMA: Dict[str, pl.DataType] = {
+    EXPECTED_SCHEMA: Dict[str, Type[pl.DataType]] = {
         # Required core fields
         "scientificName": pl.Utf8,
         "kingdom": pl.Utf8,
