@@ -38,4 +38,4 @@ TAXONOMIC_RANKS: List[str] = [
     "subspecies",
     "variety",
     "form",
-] 
+]
