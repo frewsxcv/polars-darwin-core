@@ -118,14 +118,6 @@ class DarwinCoreCsvLazyFrame:  # pylint: disable=too-few-public-methods
                 actual_type = schema[field]
                 assert actual_type == dtype, f"Field '{field}' has unexpected type: got {actual_type}, expected {dtype}"
 
-    # ---------------------------------------------------------------------
-    # Public helpers
-    # ---------------------------------------------------------------------
-    def collect(self, **kwargs: Any) -> pl.DataFrame:
-        """Eagerly evaluate the query plan and return a *polars* DataFrame."""
-
-        return self._inner.collect(**kwargs)
-
 
 # -------------------------------------------------------------------------
 # Convenience functions
