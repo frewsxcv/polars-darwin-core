@@ -6,7 +6,7 @@ This library provides helpers for working with Darwin Core (DwC) data in
 polars DataFrames and LazyFrames.
 """
 
-from .darwin_core import Kingdom, kingdomDataType, TAXONOMIC_RANKS
+from .darwin_core import Kingdom, kingdom_data_type, TAXONOMIC_RANKS
 from .lf_csv import (
     DarwinCoreCsvLazyFrame,
     read_darwin_core_csv,
@@ -16,7 +16,7 @@ from .archive import scan_archive
 __all__ = [
     "__version__",
     "Kingdom",
-    "kingdomDataType",
+    "kingdom_data_type",
     "TAXONOMIC_RANKS",
     "DarwinCoreCsvLazyFrame",
     "read_darwin_core_csv",
