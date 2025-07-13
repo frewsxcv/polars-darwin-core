@@ -437,27 +437,22 @@ dependencies = [
     { name = "polars" },
 ]
 
-[package.optional-dependencies]
+[package.dev-dependencies]
 dev = [
     { name = "hatchling" },
     { name = "mypy" },
-]
-
-[package.dev-dependencies]
-dev = [
     { name = "twine" },
 ]
 
 [package.metadata]
-requires-dist = [
-    { name = "hatchling", marker = "extra == 'dev'", specifier = ">=1.27.0" },
-    { name = "mypy", marker = "extra == 'dev'", specifier = "==1.16.1" },
-    { name = "polars", specifier = ">=0.20" },
-]
-provides-extras = ["dev"]
+requires-dist = [{ name = "polars", specifier = ">=0.20" }]
 
 [package.metadata.requires-dev]
-dev = [{ name = "twine", specifier = ">=6.1.0" }]
+dev = [
+    { name = "hatchling", specifier = ">=1.27.0" },
+    { name = "mypy", specifier = "==1.16.1" },
+    { name = "twine", specifier = ">=6.1.0" },
+]
 
 [[package]]
 name = "pycparser"
