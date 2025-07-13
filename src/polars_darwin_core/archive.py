@@ -13,7 +13,7 @@ from .lf_csv import DarwinCoreCsvLazyFrame
 __all__ = ["scan_archive"]
 
 
-def _parse_meta(meta_path: Path):
+def _parse_meta(meta_path: Path) -> tuple[str, bool, str, List[str]]:
     """Return information (core_file, has_header, separator, column_names)."""
 
     tree = ET.parse(meta_path)
@@ -79,8 +79,10 @@ def _parse_meta(meta_path: Path):
     id_elem = core_elem.find(".//id")
     if id_elem is None:
         id_elem = core_elem.find("dwc:id", ns)
-    if id_elem is not None and id_elem.get("index") is not None:
-        idx = int(id_elem.get("index"))
+    assert id_elem is not None
+    idx2 = id_elem.get("index")
+    if idx2 is not None:
+        idx = int(idx2)
         if len(fields) <= idx:
             fields.extend([""] * (idx - len(fields) + 1))
         # id doesn't have a term; choose "id"

@@ -17,6 +17,6 @@ class TestLfCsv(unittest.TestCase):
             lf = read_darwin_core_csv(csv_path)
             self.assertIsInstance(lf, DarwinCoreCsvLazyFrame)
 
-            df: pl.DataFrame = lf.collect()
+            df: pl.DataFrame = lf._inner.collect()
             self.assertEqual(df.shape, (2, 2))  # two rows, two columns
             self.assertEqual(df["kingdom"].to_list(), ["Animalia", "Plantae"])
