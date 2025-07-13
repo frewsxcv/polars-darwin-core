@@ -21,7 +21,7 @@ class TestDarwinCore(unittest.TestCase):
 
         # Collect a small portion to verify schema and some basic stats
         # Polars will lazily evaluate; we collect first 100 rows for speed.
-        df: pl.DataFrame = lf.head(1).collect()
+        df: pl.DataFrame = lf._inner.head(1).collect()
         self.assertEqual(df.shape, (1, df.width))
         expected_row = {
             'gbifID': 984586740,
@@ -263,7 +263,7 @@ class TestDarwinCore(unittest.TestCase):
         self.assertIsInstance(lf, DarwinCoreCsvLazyFrame)
 
         # Collect a small portion to verify we can access the data
-        df = lf.head(2).collect()
+        df = lf._inner.head(2).collect()
 
         # Verify we have the right schema - occurrence.txt has many columns
         self.assertTrue(df.width > 10)
