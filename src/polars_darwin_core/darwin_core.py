@@ -26,7 +26,7 @@ class Kingdom(str, Enum):
         return str(self.value)
 
 
-KingdomDataType = pl.Enum(Kingdom)
+kingdomDataType = pl.Enum(Kingdom)
 
 
 # See: https://dwc.tdwg.org/terms/#taxon

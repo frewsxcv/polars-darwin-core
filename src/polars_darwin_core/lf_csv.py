@@ -5,7 +5,7 @@ from typing import Any, Dict, Iterable, List, Optional, Type
 
 import polars as pl
 
-from polars_darwin_core.darwin_core import KingdomDataType
+from polars_darwin_core.darwin_core import kingdomDataType
 
 __all__ = [
     "DarwinCoreCsvLazyFrame",
@@ -25,7 +25,7 @@ class DarwinCoreCsvLazyFrame:  # pylint: disable=too-few-public-methods
     EXPECTED_SCHEMA: Dict[str, Type[pl.DataType] | pl.DataType] = {
         # Required core fields
         "scientificName": pl.Utf8,
-        "kingdom": KingdomDataType,
+        "kingdom": kingdomDataType,
         # Optional but common fields
         "phylum": pl.Utf8,
         "class": pl.Utf8,
