@@ -7,9 +7,9 @@ Helpers for working with [Darwin Core](https://dwc.tdwg.org/) CSV data using [po
 ### Reading a single Darwin Core CSV file
 
 ```python
-from polars_darwin_core import read_darwin_core_csv
+from polars_darwin_core import DarwinCoreLazyFrame
 
-lf = read_darwin_core_csv("occurrence.csv")
+lf = DarwinCoreLazyFrame.from_csv("occurrence.csv")
 print(lf.collect())
 ```
 
@@ -17,13 +17,13 @@ print(lf.collect())
 
 ```python
 import polars as pl
-from polars_darwin_core import scan_archive
+from polars_darwin_core import DarwinCoreLazyFrame
 
 # Path to an unpacked Darwin Core Archive directory (containing meta.xml)
 archive_path = "path/to/dwc/archive"
 
 # Load the core file from the archive
-lf = scan_archive(archive_path)
+lf = DarwinCoreLazyFrame.from_archive(archive_path)
 
 # Work with the data
 df = lf.filter(pl.col("kingdom") == "Animalia").collect()
