@@ -2,7 +2,7 @@ from pathlib import Path
 import unittest
 
 import polars as pl
-from polars_darwin_core.lf_csv import read_darwin_core_csv, DarwinCoreCsvLazyFrame
+from polars_darwin_core.lf_csv import read_darwin_core, DarwinCoreLazyFrame
 from polars_darwin_core.archive import scan_archive
 from polars_darwin_core.darwin_core import Kingdom
 
@@ -14,8 +14,8 @@ class TestDarwinCore(unittest.TestCase):
         data_dir = Path(__file__).parents[1] / "sample-dataset"
         file_path = data_dir / "occurrence.txt"
 
-        lf = read_darwin_core_csv(file_path)
-        self.assertIsInstance(lf, DarwinCoreCsvLazyFrame)
+        lf = read_darwin_core(file_path)
+        self.assertIsInstance(lf, DarwinCoreLazyFrame)
 
         # Collect a small portion to verify schema and some basic stats
         # Polars will lazily evaluate; we collect first 100 rows for speed.
@@ -258,7 +258,7 @@ class TestDarwinCore(unittest.TestCase):
         lf = scan_archive(data_dir)
 
         # Validate the result is a DarwinCoreCsvLazyFrame
-        self.assertIsInstance(lf, DarwinCoreCsvLazyFrame)
+        self.assertIsInstance(lf, DarwinCoreLazyFrame)
 
         # Collect a small portion to verify we can access the data
         df = lf._inner.head(2).collect()

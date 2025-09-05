@@ -3,7 +3,7 @@ import unittest
 import tempfile
 
 import polars as pl
-from polars_darwin_core.lf_csv import DarwinCoreCsvLazyFrame, read_darwin_core_csv
+from polars_darwin_core.lf_csv import DarwinCoreLazyFrame, read_darwin_core
 
 
 class TestLfCsv(unittest.TestCase):
@@ -14,8 +14,8 @@ class TestLfCsv(unittest.TestCase):
             csv_path = tmp_path / "dwc.csv"
             csv_path.write_text("id\tkingdom\n1\tAnimalia\n2\tPlantae")
 
-            lf = read_darwin_core_csv(csv_path)
-            self.assertIsInstance(lf, DarwinCoreCsvLazyFrame)
+            lf = read_darwin_core(csv_path)
+            self.assertIsInstance(lf, DarwinCoreLazyFrame)
 
             df: pl.DataFrame = lf._inner.collect()
             self.assertEqual(df.shape, (2, 2))  # two rows, two columns

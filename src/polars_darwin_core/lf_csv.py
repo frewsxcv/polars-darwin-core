@@ -8,12 +8,12 @@ import polars as pl
 from polars_darwin_core.darwin_core import kingdom_data_type
 
 __all__ = [
-    "DarwinCoreCsvLazyFrame",
-    "read_darwin_core_csv",
+    "DarwinCoreLazyFrame",
+    "read_darwin_core",
 ]
 
 
-class DarwinCoreCsvLazyFrame:  # pylint: disable=too-few-public-methods
+class DarwinCoreLazyFrame:  # pylint: disable=too-few-public-methods
     """A thin wrapper around :pyclass:`polars.LazyFrame` for Darwin Core CSVs.
 
     The class intentionally exposes (and delegates to) the full *polars* lazy
@@ -115,13 +115,13 @@ class DarwinCoreCsvLazyFrame:  # pylint: disable=too-few-public-methods
 # -------------------------------------------------------------------------
 
 
-def read_darwin_core_csv(
+def read_darwin_core(
     path: str | Path,
-) -> DarwinCoreCsvLazyFrame:
+) -> DarwinCoreLazyFrame:
     """Scan a Darwin Core CSV lazily.
 
     This is a very light wrapper around :pyfunc:`polars.scan_csv` that returns a
-    domain-specific :class:`DarwinCoreCsvLazyFrame` instead of a plain
+    domain-specific :class:`DarwinCoreLazyFrame` instead of a plain
     :class:`polars.LazyFrame`.
 
     Parameters
@@ -134,8 +134,8 @@ def read_darwin_core_csv(
 
     inner = pl.scan_csv(
         path,
-        schema_overrides=DarwinCoreCsvLazyFrame.EXPECTED_SCHEMA,
+        schema_overrides=DarwinCoreLazyFrame.EXPECTED_SCHEMA,
         quote_char=None,
         separator="\t",
     )
-    return DarwinCoreCsvLazyFrame(inner)
+    return DarwinCoreLazyFrame(inner)
