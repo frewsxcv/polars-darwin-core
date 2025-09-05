@@ -134,6 +134,26 @@ class DarwinCoreLazyFrame:
         )
         return DarwinCoreLazyFrame(inner)
 
+    @classmethod
+    def from_parquet(
+        cls,
+        path: str | Path,
+    ) -> DarwinCoreLazyFrame:
+        """Scan a Darwin Core Parquet file lazily.
+        This is a very light wrapper around :pyfunc:`polars.scan_parquet` that returns a
+        domain-specific :class:`DarwinCoreLazyFrame` instead of a plain
+        :class:`polars.LazyFrame`.
+        Parameters
+        ----------
+        path : str | Path
+            Path to the Parquet file
+        """
+
+        inner = pl.scan_parquet(
+            path,
+        )
+        return DarwinCoreLazyFrame(inner)
+
     @staticmethod
     def _parse_meta(meta_path: Path) -> tuple[str, bool, str, List[str]]:
         """Return information (core_file, has_header, separator, column_names)."""
