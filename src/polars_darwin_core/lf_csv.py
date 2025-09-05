@@ -3,6 +3,7 @@ from __future__ import annotations
 from pathlib import Path
 from typing import Any, Dict, Iterable, List, Optional, Type
 import xml.etree.ElementTree as ET
+from dataclasses import dataclass
 
 import polars as pl
 
@@ -11,6 +12,19 @@ from polars_darwin_core.darwin_core import kingdom_data_type
 __all__ = [
     "DarwinCoreLazyFrame",
 ]
+
+
+@dataclass
+class _Meta:
+    """A private class to hold parsed metadata from meta.xml."""
+
+    core_file: str
+    separator: str
+    quote_char: str
+    encoding: str
+    has_header: bool
+    columns: List[str]
+    default_fields: Dict[str, str]
 
 
 class DarwinCoreLazyFrame:
@@ -96,9 +110,18 @@ class DarwinCoreLazyFrame:
         return DarwinCoreLazyFrame(inner)
 
     @staticmethod
-    def _parse_meta(meta_path: Path) -> Dict[str, Any]:
-        """Return information about the archive."""
+    def _parse_meta(meta_path: Path) -> _Meta:
+        """Parse the meta.xml file and return a dictionary of settings.
 
+        This method reads the Darwin Core archive's metafile (meta.xml) to extract
+        parameters needed to correctly parse the core data file. The parsing is
+        guided by the Darwin Core text guide.
+
+        Returns
+        -------
+        _Meta
+            A dataclass instance containing the parsed metadata.
+        """
         tree = ET.parse(meta_path)
         root = tree.getroot()
 
@@ -126,18 +149,23 @@ class DarwinCoreLazyFrame:
             raise ValueError("<files> missing <location>")
         core_file = location_elem.text.strip()
 
-        # attributes
+        # attributes from the <core> element, with defaults from the guide
+        # fieldsTerminatedBy: Delimiter between fields (e.g., "," or "\t").
         separator = core_elem.get("fieldsTerminatedBy", ",")
         if separator == "\\t":
             separator = "\t"
 
+        # fieldsEnclosedBy: Character to enclose fields (e.g., '"').
         quote_char = core_elem.get("fieldsEnclosedBy", '"')
+
+        # encoding: Character encoding of the file (e.g., "utf-8").
         encoding = core_elem.get("encoding", "utf-8")
 
+        # ignoreHeaderLines: Number of initial lines to skip.
         ignore_header = int(core_elem.get("ignoreHeaderLines", "0"))
         has_header = ignore_header >= 1
 
-        # column order
+        # fields and default values
         fields: List[str] = []
         default_fields: Dict[str, str] = {}
 
@@ -153,6 +181,7 @@ class DarwinCoreLazyFrame:
             term = term_uri.rsplit("/", 1)[-1].rsplit("#", 1)[-1]
             index_str = field_elem.get("index")
 
+            # A <field> with an "index" maps a column in the data file.
             if index_str is not None:
                 try:
                     idx = int(index_str)
@@ -161,6 +190,8 @@ class DarwinCoreLazyFrame:
                 if len(fields) <= idx:
                     fields.extend([""] * (idx - len(fields) + 1))
                 fields[idx] = term
+            # A <field> without "index" but with "default" defines a constant
+            # value for that term for all rows.
             else:
                 default_value = field_elem.get("default")
                 if default_value is not None:
@@ -187,15 +218,15 @@ class DarwinCoreLazyFrame:
         # fill any empty column names with fallback names
         final_fields = [name if name else f"col_{i}" for i, name in enumerate(fields)]
 
-        return {
-            "core_file": core_file,
-            "has_header": has_header,
-            "separator": separator,
-            "columns": final_fields,
-            "quote_char": quote_char,
-            "encoding": encoding,
-            "default_fields": default_fields,
-        }
+        return _Meta(
+            core_file=core_file,
+            has_header=has_header,
+            separator=separator,
+            columns=final_fields,
+            quote_char=quote_char,
+            encoding=encoding,
+            default_fields=default_fields,
+        )
 
     @classmethod
     def from_archive(
@@ -221,27 +252,27 @@ class DarwinCoreLazyFrame:
             raise FileNotFoundError("meta.xml not found in archive directory")
 
         meta = cls._parse_meta(meta_path)
-        data_path = base_dir / meta["core_file"]
+        data_path = base_dir / meta.core_file
 
         schema_from_meta = {
             col: cls.SCHEMA_OVERRIDES[col]
-            for col in meta["columns"]
+            for col in meta.columns
             if col in cls.SCHEMA_OVERRIDES
         }
         scan_csv_kwargs.setdefault("schema_overrides", {}).update(schema_from_meta)
 
         inner = pl.scan_csv(
             data_path,
-            separator=meta["separator"],
-            has_header=meta["has_header"],
-            new_columns=meta["columns"] if not meta["has_header"] else None,
-            quote_char=meta["quote_char"],
-            encoding=meta["encoding"],
+            separator=meta.separator,
+            has_header=meta.has_header,
+            new_columns=meta.columns if not meta.has_header else None,
+            quote_char=meta.quote_char,
+            encoding=meta.encoding,
             **scan_csv_kwargs,
         )
 
         # Add default fields
-        for col_name, value in meta["default_fields"].items():
+        for col_name, value in meta.default_fields.items():
             inner = inner.with_columns(pl.lit(value).alias(col_name))
 
         return DarwinCoreLazyFrame(inner)
