@@ -96,8 +96,8 @@ class DarwinCoreLazyFrame:
         return DarwinCoreLazyFrame(inner)
 
     @staticmethod
-    def _parse_meta(meta_path: Path) -> tuple[str, bool, str, List[str]]:
-        """Return information (core_file, has_header, separator, column_names)."""
+    def _parse_meta(meta_path: Path) -> Dict[str, Any]:
+        """Return information about the archive."""
 
         tree = ET.parse(meta_path)
         root = tree.getroot()
@@ -126,56 +126,76 @@ class DarwinCoreLazyFrame:
             raise ValueError("<files> missing <location>")
         core_file = location_elem.text.strip()
 
-        # delimiter & header
-        separator = core_elem.get("fieldsTerminatedBy", "\t")
-        # XML may encode tab as "\t" literal or as actual tab char
-        if separator == "\t":
+        # attributes
+        separator = core_elem.get("fieldsTerminatedBy", ",")
+        if separator == "\\t":
             separator = "\t"
-        elif separator == "\\t":
-            separator = "\t"
+
+        quote_char = core_elem.get("fieldsEnclosedBy", '"')
+        encoding = core_elem.get("encoding", "utf-8")
 
         ignore_header = int(core_elem.get("ignoreHeaderLines", "0"))
         has_header = ignore_header >= 1
 
         # column order
         fields: List[str] = []
+        default_fields: Dict[str, str] = {}
+
         field_elems = core_elem.findall(".//field")
         if not field_elems:
             field_elems = core_elem.findall("dwc:field", ns)
 
         for field_elem in field_elems:
-            index_str = field_elem.get("index")
             term_uri = field_elem.get("term")
-            if index_str is None or term_uri is None:
+            if term_uri is None:
                 continue
-            try:
-                idx = int(index_str)
-            except ValueError:
-                continue
-            # extract local term name from URI
+
             term = term_uri.rsplit("/", 1)[-1].rsplit("#", 1)[-1]
-            if len(fields) <= idx:
-                fields.extend([""] * (idx - len(fields) + 1))
-            fields[idx] = term
+            index_str = field_elem.get("index")
+
+            if index_str is not None:
+                try:
+                    idx = int(index_str)
+                except ValueError:
+                    continue
+                if len(fields) <= idx:
+                    fields.extend([""] * (idx - len(fields) + 1))
+                fields[idx] = term
+            else:
+                default_value = field_elem.get("default")
+                if default_value is not None:
+                    default_fields[term] = default_value
 
         # some meta.xml include <id index="0" /> that represents the record id
         id_elem = core_elem.find(".//id")
         if id_elem is None:
             id_elem = core_elem.find("dwc:id", ns)
-        assert id_elem is not None
-        idx2 = id_elem.get("index")
-        if idx2 is not None:
-            idx = int(idx2)
-            if len(fields) <= idx:
-                fields.extend([""] * (idx - len(fields) + 1))
-            # id doesn't have a term; choose "id"
-            if not fields[idx]:
-                fields[idx] = "id"
+
+        if id_elem is not None:
+            idx2 = id_elem.get("index")
+            if idx2 is not None:
+                try:
+                    idx = int(idx2)
+                    if len(fields) <= idx:
+                        fields.extend([""] * (idx - len(fields) + 1))
+                    # id doesn't have a term; choose "id"
+                    if not fields[idx]:
+                        fields[idx] = "id"
+                except (ValueError, IndexError):
+                    pass  # Or log a warning
 
         # fill any empty column names with fallback names
-        fields = [name if name else f"col_{i}" for i, name in enumerate(fields)]
+        final_fields = [name if name else f"col_{i}" for i, name in enumerate(fields)]
 
-        return core_file, has_header, separator, fields
+        return {
+            "core_file": core_file,
+            "has_header": has_header,
+            "separator": separator,
+            "columns": final_fields,
+            "quote_char": quote_char,
+            "encoding": encoding,
+            "default_fields": default_fields,
+        }
 
     @classmethod
     def from_archive(
@@ -200,22 +220,28 @@ class DarwinCoreLazyFrame:
         if not meta_path.exists():
             raise FileNotFoundError("meta.xml not found in archive directory")
 
-        core_file_rel, has_header, separator, columns = cls._parse_meta(meta_path)
-        data_path = base_dir / core_file_rel
+        meta = cls._parse_meta(meta_path)
+        data_path = base_dir / meta["core_file"]
 
         schema_from_meta = {
             col: cls.SCHEMA_OVERRIDES[col]
-            for col in columns
+            for col in meta["columns"]
             if col in cls.SCHEMA_OVERRIDES
         }
         scan_csv_kwargs.setdefault("schema_overrides", {}).update(schema_from_meta)
 
         inner = pl.scan_csv(
             data_path,
-            separator=separator,
-            has_header=has_header,
-            new_columns=columns if not has_header else None,
+            separator=meta["separator"],
+            has_header=meta["has_header"],
+            new_columns=meta["columns"] if not meta["has_header"] else None,
+            quote_char=meta["quote_char"],
+            encoding=meta["encoding"],
             **scan_csv_kwargs,
         )
+
+        # Add default fields
+        for col_name, value in meta["default_fields"].items():
+            inner = inner.with_columns(pl.lit(value).alias(col_name))
 
         return DarwinCoreLazyFrame(inner)
