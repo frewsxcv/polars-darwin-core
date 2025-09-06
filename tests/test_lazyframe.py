@@ -6,7 +6,7 @@ import polars as pl
 from polars_darwin_core import DarwinCoreLazyFrame
 
 
-class TestLfCsv(unittest.TestCase):
+class TestLazyFrame(unittest.TestCase):
     def test_read_darwin_core_csv(self) -> None:
         # Create a tiny Darwin Core‐like CSV in a temporary directory
         with tempfile.TemporaryDirectory() as tmp_dir:
