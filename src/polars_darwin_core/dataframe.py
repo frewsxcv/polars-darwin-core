@@ -5,27 +5,7 @@ from typing import Any, Mapping, Sequence
 
 import polars as pl
 
-__all__ = ["DarwinCoreDataFrame", "read_darwin_core_dataframe"]
-
-
-def read_darwin_core_dataframe(
-    path: str | Path, **read_csv_kwargs: Any
-) -> "DarwinCoreDataFrame":
-    """Read a Darwin Core CSV eagerly into a *polars* DataFrame.
-
-    Parameters
-    ----------
-    path:
-        File path to a Darwin Core‐compatible CSV file.
-    **read_csv_kwargs:
-        Additional keyword arguments forwarded to :pyfunc:`polars.read_csv`.
-
-    Returns
-    -------
-    DarwinCoreDataFrame
-    """
-
-    return DarwinCoreDataFrame(pl.read_csv(path, **read_csv_kwargs))
+__all__ = ["DarwinCoreDataFrame"]
 
 
 class DarwinCoreDataFrame(pl.DataFrame):
@@ -52,3 +32,23 @@ class DarwinCoreDataFrame(pl.DataFrame):
         **kwargs: Any,
     ) -> None:
         super().__init__(data, **kwargs)
+
+    @classmethod
+    def from_csv(
+        cls, path: str | Path, **read_csv_kwargs: Any
+    ) -> "DarwinCoreDataFrame":
+        """Read a Darwin Core CSV eagerly into a *polars* DataFrame.
+
+        Parameters
+        ----------
+        path:
+            File path to a Darwin Core‐compatible CSV file.
+        **read_csv_kwargs:
+            Additional keyword arguments forwarded to :pyfunc:`polars.read_csv`.
+
+        Returns
+        -------
+        DarwinCoreDataFrame
+        """
+
+        return cls(pl.read_csv(path, **read_csv_kwargs))
