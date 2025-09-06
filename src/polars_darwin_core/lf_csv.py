@@ -261,13 +261,18 @@ class DarwinCoreLazyFrame:
         }
         scan_csv_kwargs.setdefault("schema_overrides", {}).update(schema_from_meta)
 
+        if meta.encoding.upper() != "UTF-8":
+            raise NotImplementedError(
+                f"Only UTF-8 encoding is supported, got {meta.encoding}"
+            )
+
         inner = pl.scan_csv(
             data_path,
             separator=meta.separator,
             has_header=meta.has_header,
             new_columns=meta.columns if not meta.has_header else None,
             quote_char=meta.quote_char,
-            encoding=meta.encoding,
+            encoding="utf8",
             **scan_csv_kwargs,
         )
 
