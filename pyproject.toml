@@ -3,7 +3,7 @@ requires = ["hatchling"]
 build-backend = "hatchling.build"
 
 [project]
-version = "4.0.0"
+version = "4.1.0"
 name = "polars-darwin-core"
 description = "Helpers for working with Darwin Core (DwC) CSVs using Polars."
 readme = "README.md"
