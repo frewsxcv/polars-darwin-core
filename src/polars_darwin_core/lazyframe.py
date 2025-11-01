@@ -40,6 +40,7 @@ class DarwinCoreLazyFrame:
     # strings need to be specified.
     SCHEMA_OVERRIDES: Dict[str, Type[pl.DataType] | pl.DataType] = {
         "kingdom": kingdom_data_type,
+        "catalogNumber": pl.Utf8,
         # Dates and datetimes
         # "modified": pl.Datetime,
         # "eventDate": pl.Datetime,
