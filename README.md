@@ -1,3 +1,5 @@
+**⚠️ This repository has moved to <https://tangled.org/rwell.org/polars-darwin-core> ⚠️**
+
 # polars-darwin-core
 
 Helpers for working with [Darwin Core](https://dwc.tdwg.org/) CSV data using [polars](https://pola.rs/).
